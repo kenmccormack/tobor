@@ -4,6 +4,7 @@ from geometry_msgs.msg import Twist
 import roboclaw_driver.roboclaw_driver as rc
 
 MTR_ADDRESS = 128 
+MAX_DUTY_CYCLE = .5 
 
 def twist_callback(msg):
 
@@ -15,7 +16,12 @@ def twist_callback(msg):
     v_l = msg.linear.x - TR * msg.angular.z
     v_r = msg.linear.x + TR * msg.angular.z
 
-    rospy.loginfo("[%f , %f ]" %(v_l, v_r))
+    dutyleft = int( v_l * MAX_DUTY_CYLE * 32768)
+    dutyright= int( v_r * MAX_DUTY_CYLE * 32768)
+    roboclaw.DutyM1M2(MTR_ADDRESS, dutyleft, dutyright)
+
+    rospy.loginfo([%d , %d]%(dutyleft, dutyright))
+
 
 
 def move_robot():
