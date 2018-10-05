@@ -14,9 +14,9 @@ def twist_callback(msg):
     #rospy.loginfo("Linear Components: [%f, %f, %f]"%(msg.linear.x, msg.linear.y, msg.linear.z))
     #rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
 
-    TR = 1.0
-    v_l = msg.linear.x - TR * msg.angular.z
-    v_r = msg.linear.x + TR * msg.angular.z
+    TR = 3.0
+    v_l = msg.linear.x + TR * msg.angular.z
+    v_r = msg.linear.x - TR * msg.angular.z
 
     dutyleft = int( v_l * MAX_DUTY_CYCLE * 32768)
     dutyright= int( v_r * MAX_DUTY_CYCLE * 32768)
@@ -42,9 +42,10 @@ def move_robot():
   
 
     rospy.init_node('roboclaw_ifc')
-    rospy.Subscriber("/cmd_vel", Twist, twist_callback)
+    rospy.Subscriber("/cmd_vel", Twist, twist_callback, queue_size=1)
     rospy.spin()
 
+    rc.DutyM1M2(MTR_ADDRESS, 0, 0)
 
 
 if __name__ == '__main__':
