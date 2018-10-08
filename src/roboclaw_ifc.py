@@ -36,10 +36,11 @@ def twist_callback(msg):
     rc.DutyM1M2(MTR_ADDRESS, dutyleft, dutyright)
 
     rospy.loginfo("[%d , %d]"%(dutyleft, dutyright))
+    dummy,c1,c2 = rc.ReadCurrents(MTR_ADDRESS)
 
     status = rc.ReadError(MTR_ADDRESS)[1]
     bvoltage =rc.ReadMainBatteryVoltage(MTR_ADDRESS)[1] / 10.0
-    diagstr = "BattVoltage %f, Status 0x%x" % (bvoltage, status)
+    diagstr = "BattVoltage %f, Current[%f,%f], Status 0x%x" % (bvoltage, c1/100.0, c2/100.0, status)
 
     pub.publish(diagstr)
         
