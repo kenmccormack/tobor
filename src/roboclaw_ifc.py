@@ -5,7 +5,7 @@ import roboclaw_driver.roboclaw_driver as rc
 from std_msgs.msg import String
 
 MTR_ADDRESS = 128 
-MAX_DUTY_CYCLE = .55 
+MAX_DUTY_CYCLE = .75 
 
 def timer_callback(event):
     global last_time
@@ -28,8 +28,8 @@ def twist_callback(msg):
     #rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
 
     TR = 3.0
-    v_l = msg.linear.x + TR * msg.angular.z
-    v_r = msg.linear.x - TR * msg.angular.z
+    v_l = msg.linear.x - TR * msg.angular.z
+    v_r = msg.linear.x + TR * msg.angular.z
 
     dutyleft = int( v_l * MAX_DUTY_CYCLE * 32768)
     dutyright= int( v_r * MAX_DUTY_CYCLE * 32768)
