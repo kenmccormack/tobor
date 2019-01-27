@@ -1,0 +1,24 @@
+<launch>
+
+  <arg name="machine" default="rtkrover"/>
+
+  <include 
+     file="$(find tobor)/launch/machines.launch">
+  </include>
+
+  <node pkg="rtkrover"
+        type="remote_chatter.py"
+        name="remote_chatter_talk"
+        machine="$(arg machine)"
+        output="screen">
+        <param name="mode" type="str" value="talker"/>
+  </node>
+
+  <node pkg="tobor"
+        type="remote_chatter.py"
+        name="remote_chatter_listen"
+        output="screen">
+        <param name="mode" type="str" value="listener"/>
+  </node>
+
+</launch>

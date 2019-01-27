@@ -1,0 +1,54 @@
+<launch>
+    <!-- machines file -->
+    <include file="$(find tobor)/launch/machines.launch"/>
+
+    <arg name="use_motors" default="true"/>
+    <arg name="use_cameras" default="true"/>
+    <arg name="use_imu" default="true"/>
+    <arg name="use_rtkrover" default="true"/>
+
+    <!-- Motor controller -->
+    <group if="$(arg use_motors)">
+        <include file="$(find roboclaw_node)/launch/roboclaw.launch">
+                <arg name="dev" value="/dev/ttyUSB0" />
+                <arg name="baud" value="115200" />
+                <arg name="ticks_per_meter" value="4488"/>
+                <arg name="base_width" value="0.71"/>
+                <arg name="max_abs_linear_speed" value="1.5"/>
+        </include>
+
+        <node name="teleop_convert"
+              pkg="tobor"
+              type="teleop_node">
+	      args="_scale_linear:=5.0 _scale_angular:=4.0"
+        </node>
+    </group>
+
+    <!-- Usb webcam -->
+    <!--
+    <group if="$(arg use_cameras)">
+        <include file="$(find tobor)/launch/webcam.launch" >
+        </include>
+    </group>
+    -->
+
+    <group if="$(arg use_rtkrover)">
+    <!-- IMU and Compass -->
+    <group if="$(arg use_imu)">
+        <node name="imu_reader"
+            pkg= "rtimu_reader"
+            type= "rtimu_node"
+            machine = "rtkrover" >
+        </node>
+    </group>
+
+    <!-- GPS -->
+    <node name = "rtk_reader"
+          pkg = "rtkrover"
+          type = "rtkrover_node" 
+          machine = "rtkrover" >
+    </node>
+    </group>
+
+
+</launch>

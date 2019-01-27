@@ -1,0 +1,8 @@
+<launch>
+
+    <machine name="rtkrover"
+        address="rtkrover"
+        user="ubuntu"
+        env-loader="/home/ubuntu/catkin_ws/src/env.sh"
+    />
+</launch>

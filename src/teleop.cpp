@@ -28,8 +28,8 @@ TeleopTurtle::TeleopTurtle():
 
   nh_.param("axis_linear", linear_, linear_);
   nh_.param("axis_angular", angular_, angular_);
-  nh_.param("scale_angular", a_scale_, .20);
-  nh_.param("scale_linear", l_scale_, 1.0);
+  nh_.param("scale_angular", a_scale_, 4.20);
+  nh_.param("scale_linear", l_scale_, 5.0);
 
 
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
