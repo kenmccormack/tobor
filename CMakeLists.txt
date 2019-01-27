@@ -13,8 +13,13 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+find_package(GeographicLib 1.34 REQUIRED)
+
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
+
+set(CMAKE_CXX_FLAGS "-std=c++11")
+
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -118,7 +123,10 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${GeographicLib_INCLUDE_DIRS}
 )
+
+add_definitions (${GeographicLib_DEFINITIONS})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -134,6 +142,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(teleop_node src/teleop.cpp)
+add_executable(rtk_odom  src/rtk_odom.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -148,6 +157,10 @@ add_executable(teleop_node src/teleop.cpp)
 ## Specify libraries to link a library or executable target against
  target_link_libraries(teleop_node
    ${catkin_LIBRARIES}
+ )
+ target_link_libraries(rtk_odom
+   ${catkin_LIBRARIES}
+   ${GeographicLib_LIBRARIES}
  )
 
 #############
