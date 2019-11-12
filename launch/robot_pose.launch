@@ -1,12 +1,5 @@
 <launch>
 
-  <!-- this will generate the gps odometry from the rtk sat fix -->
-  <node 
-    pkg="tobor" 
-    type="rtk_odom" 
-    name="gps_odom">
-  </node>
-
   <!-- this will merge the imu, wheel, gps odometry into one -->
   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
     <param name="output_frame" value="odom"/>

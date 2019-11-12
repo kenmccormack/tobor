@@ -19,8 +19,9 @@
 
         <node name="teleop_convert"
               pkg="tobor"
-              type="teleop_node">
-	      args="_scale_linear:=5.0 _scale_angular:=4.0"
+              type="teleop_node"
+	      args="_scale_linear:=4.0 _scale_angular:=1.0"
+	      output= "screen">
         </node>
     </group>
 
@@ -46,9 +47,34 @@
     <node name = "rtk_reader"
           pkg = "rtkrover"
           type = "rtkrover_node" 
-          machine = "rtkrover" >
+          machine = "rtkrover" 
+	  output = "screen" >
     </node>
+
+    <node 
+        pkg="tobor" 
+        type="rtk_odom" 
+        name="gps_odom">
+    </node>
+
     </group>
+
+    <!-- Odometry -->
+    <!-- this will merge the imu, wheel, gps odometry into one -->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+        <param name="output_frame" value="odom"/>
+        <param name="freq" value="10.0"/>
+        <param name="sensor_timeout" value="1.0"/>
+        <param name="odom_used" value="true"/>
+        <param name="imu_used" value="false"/>
+        <param name="vo_used" value="true"/>
+        <param name="debug" value="true"/>
+        <param name="self_diagnose" value="true"/>
+           <remap from="vo" to="gps_odom" />
+           <remap from="odom" to="odom_wheeled" />
+           <remap from="robot_pose_ekf/odom_combined" to="odom"/>
+    </node>
+
 
 
 </launch>
