@@ -1,11 +1,10 @@
 <launch>
     <!-- machines file -->
-    <include file="$(find tobor)/launch/machines.launch"/>
 
     <arg name="use_motors" default="true"/>
-    <arg name="use_cameras" default="true"/>
-    <arg name="use_imu" default="true"/>
-    <arg name="use_rtkrover" default="true"/>
+    <arg name="use_cameras" default="false"/>
+    <arg name="use_imu" default="false"/>
+    <arg name="use_rtkrover" default="false"/>
 
     <!-- Motor controller -->
     <group if="$(arg use_motors)">
