@@ -2,10 +2,17 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
 
+#define LINEAR_AXIS 1
+#define ANGULAR_AXIS 0 
+
 class FilterVel
 {
 public:
   FilterVel(){ this->length = 10;}
+
+  void setLength(double filter_length) {
+     this->length = filter_length;
+  }
 
   double filter(double velocity){
      block.push_back(velocity);
@@ -25,10 +32,10 @@ private:
 };
 
 
-class TeleopTurtle
+class TeleOpRobot
 {
 public:
-  TeleopTurtle();
+  TeleOpRobot();
 
 private:
   void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
@@ -37,41 +44,44 @@ private:
 
   ros::NodeHandle nh_;
 
-  int linear_, angular_;
   double l_scale_, a_scale_;
+  double mixing_gain_; 
   ros::Publisher vel_pub_;
   ros::Subscriber joy_sub_;
 
 };
 
-TeleopTurtle::TeleopTurtle():
-  linear_(1),
-  angular_(0)
+TeleOpRobot::TeleOpRobot()
 {
+  double angular_length, linear_length;
+  nh_.getParam("teleop/scale/linear", a_scale_); 
+  nh_.getParam("teleop/scale/linear", l_scale_); 
+  nh_.getParam("teleop/mixing_gain", mixing_gain_);
 
-  nh_.param("axis_linear", linear_, linear_);
-  nh_.param("axis_angular", angular_, angular_);
-  nh_.param("scale_angular", a_scale_, 2.20);
-  nh_.param("scale_linear", l_scale_, 5.0);
+  nh_.getParam("teleop/filter_length/linear", linear_length);
+  nh_.getParam("teleop/filter_length/angular", angular_length);
+  lfilter.setLength(linear_length);
+  afilter.setLength(angular_length);
 
-   
   vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-
-
-  joy_sub_ = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &TeleopTurtle::joyCallback, this);
+  joy_sub_ = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &TeleOpRobot::joyCallback, this);
 
 }
 
-void TeleopTurtle::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
+void TeleOpRobot::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   geometry_msgs::Twist twist;
-  double angular = a_scale_*joy->axes[angular_];
-  double linear = l_scale_*joy->axes[linear_];
+  double linear = l_scale_ * joy->axes[LINEAR_AXIS];
+
   /* add a boost to rotation when linear is small*/
-  double aboost = ( 1.0 - linear/l_scale_ ) * 0.6;
-  angular = (1.0 + aboost ) * angular;
+  double aboost = ( 1.0 - abs(joy->axes[LINEAR_AXIS]) ) * mixing_gain_;
+  double angular = (1.0 + aboost ) * (a_scale_ * joy->axes[ANGULAR_AXIS]);
+
+  /* Filter the angular and linear components */ 
   angular = afilter.filter(angular);
   linear = lfilter.filter(linear);
+
+  /* publish  a twist  control to motor driver */
   twist.angular.z = angular;
   twist.linear.x = linear;
   vel_pub_.publish(twist);
@@ -80,8 +90,8 @@ void TeleopTurtle::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "teleop_turtle");
-  TeleopTurtle teleop_turtle;
+  ros::init(argc, argv, "teleop_robot");
+  TeleOpRobot teleop_robot;
 
   ros::spin();
 }

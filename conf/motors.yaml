@@ -1,0 +1,17 @@
+teleop:
+  filter_length : 
+     linear : 10 
+     angular : 10
+  scale:
+     linear : 5.0
+     angular : 4.0
+  mixing_gain :  0.6 
+roboclaw:
+  device : "/dev/ttyUSB0"
+  baud  : 115200
+  ticks_per_meter : 4488
+  base_width : 0.71
+  max_linear_speed : 1.5
+
+
+
