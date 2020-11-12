@@ -13,4 +13,11 @@
         type = "roboclaw_ifc.py"
         output = "screen" >
     </node>
+
+    <node
+	name = "gpsd_client"
+	pkg = "gpsd_client"
+	type = "gpsd_client">
+    </node>
+
 </launch>
