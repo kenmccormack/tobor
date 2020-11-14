@@ -21,4 +21,8 @@
 	type = "gpsd_client">
     </node>
 
+    <include 
+      file="$(find tobor_navigation)/launch/start_navigation.launch"  >
+    </include>
+
 </launch>
