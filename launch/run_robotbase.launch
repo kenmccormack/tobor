@@ -1,5 +1,8 @@
 <launch>
 
+    <include
+        file = "$(find tobor)/conf/motors.yaml">
+    </include>
 
     <node
         name= "teleop_convert"
