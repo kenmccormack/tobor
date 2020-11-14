@@ -1,0 +1,10 @@
+<launch>
+   <include
+        file="$(find tobor_navigation)/launch/tobor_navigation.launch">
+	  <arg name="use_map" value="false" />
+	  <arg name="open_rviz" value="false" />
+	  <arg name="use_pf" value="false" />
+   </include>
+
+
+</launch>
