@@ -25,14 +25,14 @@
 
     <collision name='collision'>
       <geometry>
-        <box size=".4 .2 .1"/>
+        <box size=".78 .43 .4"/>
       </geometry>
     </collision>
 
     <visual name='chassis_visual'>
       <origin xyz="0 0 0" rpy=" 0 0 0"/>
       <geometry>
-        <box size=".4 .2 .1"/>
+        <box size=".78 .43 .4"/>
       </geometry>
     </visual>
 
@@ -93,13 +93,13 @@
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
-        <cylinder radius="0.1" length="0.05"/>
+        <cylinder radius="0.15" length="0.095"/>
       </geometry>
     </collision>
     <visual name="left_wheel_visual">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
-        <cylinder radius="0.1" length="0.05"/>
+        <cylinder radius="0.15" length="0.095"/>
       </geometry>
     </visual>
     <inertial>
@@ -117,13 +117,13 @@
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
-        <cylinder radius="0.1" length="0.05"/>
+        <cylinder radius="0.15" length="0.095"/>
       </geometry>
     </collision>
     <visual name="right_wheel_visual">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
-        <cylinder radius="0.1" length="0.05"/>
+        <cylinder radius="0.15" length="0.095"/>
       </geometry>
     </visual>
     <inertial>
@@ -138,7 +138,7 @@
 
 
   <joint type="continuous" name="left_wheel_hinge">
-    <origin xyz="0 0.15 0" rpy="0 0 0"/>
+    <origin xyz=".35 0.27 0" rpy="0 0 0"/>
     <!--origin xyz="0.1 0.13 0" rpy="0 1.5707 1.5707"/-->
     <child link="left_wheel"/>
     <parent link="chassis"/>
@@ -148,7 +148,7 @@
   </joint>
 
   <joint type="continuous" name="right_wheel_hinge">
-    <origin xyz="0 -0.15 0" rpy="0 0 0"/>
+    <origin xyz=".35 -0.27 0" rpy="0 0 0"/>
     <!--origin xyz="0.1 -0.13 0" rpy="0 1.5707 1.5707"/-->
     <child link="right_wheel"/>
     <parent link="chassis"/>
