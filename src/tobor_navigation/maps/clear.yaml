@@ -1,4 +1,4 @@
-image: /home/quantum/tobor_ws/src/tobor_navigation/maps/clear.pgm
+image: /home/user/quantum_ws/install/share/tobor_navigation/maps/clear.pgm
 resolution: 0.050000
 origin: [-10.000000, -10.000000, 0.000000]
 negate: 0

@@ -1,7 +1,8 @@
 <launch>
    <include
         file="$(find tobor_navigation)/launch/tobor_navigation.launch">
-	  <arg name="use_map" value="false" />
+	  <arg name="map_name" value="clear" />
+	  <arg name="use_map" value="true" />
 	  <arg name="open_rviz" value="false" />
 	  <arg name="use_pf" value="false" />
    </include>
