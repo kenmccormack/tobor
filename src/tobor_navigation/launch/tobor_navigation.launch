@@ -14,8 +14,8 @@
     <param name="use_gui" value="False"/>
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-  <!-- tobor has chassis, turtlebot has base_footprint -->
-  <node pkg="tf" type="static_transform_publisher" name="base" args="0 0 0 0 0 0 chassis base_footprint 100" />
+  <!-- tobor has base_link, turtlebot has base_footprint -->
+  <node pkg="tf" type="static_transform_publisher" name="base" args="0 0 0 0 0 0 base_link base_footprint 100" />
 
   <!-- Map server -->
   <group if="$(arg use_map)">

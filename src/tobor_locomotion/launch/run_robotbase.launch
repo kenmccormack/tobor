@@ -12,7 +12,6 @@
         pkg = "gpsd_client"
         type = "gpsd_client">
     </node>
-    <node pkg="tf" type="static_transform_publisher" name="base2chassis" args="0 0 0 0 0 0 base_link chassis 100" />
 
     <include 
       file="$(find tobor_navigation)/launch/start_navigation.launch"  >

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 
-<robot name="myrobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="quantum" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <xacro:property name="cameraSize" value="0.05"/>
   <xacro:property name="cameraMass" value="0.1"/>
@@ -14,7 +14,7 @@
   <xacro:include filename="$(find tobor_description)/urdf/materials.xacro" />
   <xacro:include filename="$(find tobor_description)/urdf/macros.xacro" />
 
-  <link name='chassis'>
+  <link name='base_link'>
     <pose>0 0 0.1 0 0 0</pose>
 
     <inertial>
@@ -34,7 +34,7 @@
       </geometry>
     </collision>
 
-    <visual name='chassis_visual'>
+    <visual name='base_link_visual'>
       <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <geometry>
         <box size=".78 .43 .2"/>
@@ -159,7 +159,7 @@
     <origin xyz="0.0 0.27 0" rpy="0 0 0"/>
     <!--origin xyz="0.1 0.13 0" rpy="0 1.5707 1.5707"/-->
     <child link="left_wheel"/>
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <axis xyz="0 1 0" rpy="0 0 0"/>
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0"/>
@@ -169,7 +169,7 @@
     <origin xyz="0.0 -0.27 0" rpy="0 0 0"/>
     <!--origin xyz="0.1 -0.13 0" rpy="0 1.5707 1.5707"/-->
     <child link="right_wheel"/>
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <axis xyz="0 1 0" rpy="0 0 0"/>
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0"/>
@@ -223,7 +223,7 @@
   <joint name="camera_joint" type="fixed">
     <axis xyz="0 1 0" />
     <origin xyz=".2 0 0" rpy="0 0 0"/>
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <child link="camera"/>
   </joint>
 -->
@@ -231,7 +231,7 @@
   <joint name="hokuyo_joint" type="fixed">
     <axis xyz="0 1 0" />
     <origin xyz=".15 0 .1" rpy="0 0 0"/>
-    <parent link="chassis"/>
+    <parent link="base_link"/>
     <child link="hokuyo"/>
   </joint>
 
