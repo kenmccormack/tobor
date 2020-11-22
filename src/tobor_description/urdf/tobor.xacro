@@ -4,44 +4,46 @@
 
   <xacro:property name="cameraSize" value="0.05"/>
   <xacro:property name="cameraMass" value="0.1"/>
-  <xacro:property name="wheelradius" value="0.15"/>
+  <xacro:property name="wheelradius" value="0.174"/>
   <xacro:property name="wheelwidth" value="0.095"/>
+  <xacro:property name="wheelDistance" value="0.54"/>
+  <xacro:property name="bodyLength" value="0.80"/>
   
 
   <xacro:include filename="$(find tobor_description)/urdf/tobor.gazebo" />
   <xacro:include filename="$(find tobor_description)/urdf/materials.xacro" />
   <xacro:include filename="$(find tobor_description)/urdf/macros.xacro" />
 
-
   <link name='chassis'>
     <pose>0 0 0.1 0 0 0</pose>
 
     <inertial>
       <mass value="5.0"/>
-      <origin xyz="0.0 0 -0.0" rpy=" 0 0 0"/>
+      <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <inertia
-          ixx="0.1" ixy="0" ixz="0"
-          iyy="0.1" iyz="0"
-          izz="0.1"
+          ixx="0.0937" ixy="0" ixz="0"
+          iyy="0.27" iyz="0"
+          izz="0.33"
       />
     </inertial>
 
     <collision name='collision'>
+      <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <geometry>
         <box size=".78 .43 .2"/>
       </geometry>
     </collision>
 
     <visual name='chassis_visual'>
-      <origin xyz="0 0 -0.0" rpy=" 0 0 0"/>
+      <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <geometry>
         <box size=".78 .43 .2"/>
       </geometry>
     </visual>
 
 
-    <collision name='caster_collision'>
-      <origin xyz="-0.15 0 -0.1" rpy=" 0 0 0"/>
+    <collision name='left_caster_collision'>
+      <origin xyz="-0.50 -0.15 -0.1" rpy=" 0 0 0"/>
       <geometry>
         <sphere radius="0.0495"/>
       </geometry>
@@ -50,44 +52,37 @@
           <ode>
             <mu>0</mu>
             <mu2>0</mu2>
-            <slip1>1.0</slip1>
-            <slip2>1.0</slip2>
           </ode>
         </friction>
       </surface>
     </collision>
-
-    <visual name='caster_visual'>
-      <origin xyz="-0.15 0 -0.1" rpy=" 0 0 0"/>
+    <visual name='left_caster_visual'>
+      <origin xyz="-0.50 -0.15 -0.1" rpy=" 0 0 0"/>
       <geometry>
         <sphere radius="0.0495"/>
       </geometry>
     </visual>
 
-    <collision name='caster_front_collision'>
-      <origin xyz="0.15 0 -0.1" rpy=" 0 0 0"/>
-      <geometry>
-        <sphere radius="0.0495"/>
-      </geometry>
-      <surface>
-        <friction>
-          <ode>
-            <mu>0</mu>
-            <mu2>0</mu2>
-            <slip1>1.0</slip1>
-            <slip2>1.0</slip2>
-          </ode>
-        </friction>
-      </surface>
-    </collision>
-
-    <visual name='caster_front_visual'>
-      <origin xyz="0.15 0 -0.1" rpy=" 0 0 0"/>
+    <collision name='right_caster_collision'>
+        <origin xyz="-0.50 0.15 -0.1" rpy=" 0 0 0"/>
+        <geometry>
+          <sphere radius="0.0495"/>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0</mu>
+              <mu2>0</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    <visual name='right_caster_visual'>
+      <origin xyz="-0.50 0.15 -0.1" rpy=" 0 0 0"/>
       <geometry>
         <sphere radius="0.0495"/>
       </geometry>
     </visual>
-
   </link>
 
 
@@ -98,6 +93,16 @@
       <geometry>
          <cylinder radius="${wheelradius}" length="${wheelwidth}"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>30</mu>
+            <mu2>30</mu2>
+            <slip1>1.0</slip1>
+            <slip2>1.0</slip2>
+          </ode>
+        </friction>
+      </surface>
     </collision>
     <visual name="left_wheel_visual">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
@@ -122,6 +127,16 @@
       <geometry>
         <cylinder radius="${wheelradius}" length="${wheelwidth}"/>
       </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>30</mu>
+            <mu2>30</mu2>
+            <slip1>1.0</slip1>
+            <slip2>1.0</slip2>
+          </ode>
+        </friction>
+      </surface>
     </collision>
     <visual name="right_wheel_visual">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
@@ -159,6 +174,26 @@
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0"/>
   </joint>
+
+<!--
+  <link name="baselink">
+    <collision>
+      <origin xyz="0 0 0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size=".2 .38 .2"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin xyz="0 0 -0.0" rpy=" 0 0 0"/>
+      <geometry>
+        <box size=".2 .38 .2"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  -->
+  
+
 
 <!--
   <link name="camera">
