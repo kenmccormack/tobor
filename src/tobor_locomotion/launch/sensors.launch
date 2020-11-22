@@ -1,0 +1,6 @@
+<launch>
+    <include 
+        file="$(find realsense2_camera)/launch/rs_t265.launch">
+        <arg name="camera" value="vslam"/>
+    </include>
+</launch>
