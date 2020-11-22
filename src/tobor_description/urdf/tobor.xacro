@@ -8,7 +8,8 @@
   <xacro:property name="wheelwidth" value="0.095"/>
   <xacro:property name="wheelDistance" value="0.54"/>
   <xacro:property name="bodyLength" value="0.80"/>
-  
+  <xacro:property name="casterRadius" value="0.05"/>
+
 
   <xacro:include filename="$(find tobor_description)/urdf/tobor.gazebo" />
   <xacro:include filename="$(find tobor_description)/urdf/materials.xacro" />
@@ -16,36 +17,24 @@
 
   <link name='base_link'>
     <pose>0 0 0.1 0 0 0</pose>
-
-    <inertial>
-      <mass value="5.0"/>
-      <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
-      <inertia
-          ixx="0.0937" ixy="0" ixz="0"
-          iyy="0.27" iyz="0"
-          izz="0.33"
-      />
-    </inertial>
-
+    
     <collision name='collision'>
       <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <geometry>
-        <box size=".78 .43 .2"/>
+        <box size=".78 .43 .05"/>
       </geometry>
     </collision>
-
     <visual name='base_link_visual'>
       <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
       <geometry>
-        <box size=".78 .43 .2"/>
+        <box size=".78 .43 .05"/>
       </geometry>
     </visual>
 
-
     <collision name='left_caster_collision'>
-      <origin xyz="-0.50 -0.15 -0.1" rpy=" 0 0 0"/>
+      <origin xyz="-0.50 -0.15 -${wheelradius-casterRadius}" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.0495"/>
+        <sphere radius="${casterRadius}"/>
       </geometry>
       <surface>
         <friction>
@@ -57,16 +46,16 @@
       </surface>
     </collision>
     <visual name='left_caster_visual'>
-      <origin xyz="-0.50 -0.15 -0.1" rpy=" 0 0 0"/>
+      <origin xyz="-0.50 -0.15 -0.12" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.0495"/>
+        <sphere radius="${casterRadius}"/>
       </geometry>
     </visual>
 
     <collision name='right_caster_collision'>
-        <origin xyz="-0.50 0.15 -0.1" rpy=" 0 0 0"/>
+        <origin xyz="-0.50 0.15 -0.12" rpy=" 0 0 0"/>
         <geometry>
-          <sphere radius="0.0495"/>
+          <sphere radius="${casterRadius}"/>
         </geometry>
         <surface>
           <friction>
@@ -78,9 +67,9 @@
         </surface>
       </collision>
     <visual name='right_caster_visual'>
-      <origin xyz="-0.50 0.15 -0.1" rpy=" 0 0 0"/>
+      <origin xyz="-0.50 0.15 -0.12" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.0495"/>
+        <sphere radius="${casterRadius}"/>
       </geometry>
     </visual>
   </link>
@@ -174,6 +163,41 @@
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0"/>
   </joint>
+
+  <link name="body">
+    <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
+    <collision name="collision">
+      <origin xyz="-.2 0 0.1" rpy=" 0 0 0"/>
+      <geometry>
+        <box size=".78 .43 .35"/>
+      </geometry>
+    </collision>
+    <visual name="right_wheel_visual">
+      <origin xyz="-.2 0 0.3" rpy=" 0 0 0"/>
+      <geometry>
+        <box size=".78 .43 .35"/>
+      </geometry>
+      <material name="yellow"/>
+    </visual>
+   <inertial>
+      <mass value="5.0"/>
+      <origin xyz="-.2 0 0" rpy=" 0 0 0"/>
+      <inertia
+          ixx="0.0937" ixy="0" ixz="0"
+          iyy="0.27" iyz="0"
+          izz="0.33"
+      />
+    </inertial>
+  </link>
+
+  <joint type="fixed" name="body_hinge">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <!--origin xyz="0.1 -0.13 0" rpy="0 1.5707 1.5707"/-->
+    <child link="body"/>
+    <parent link="base_link"/>
+    <axis xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
 
 <!--
   <link name="baselink">

@@ -37,11 +37,15 @@
 
 
   <gazebo reference="base_link">
-    <material>Gazebo/Yellow</material>
+    <material>Gazebo/Black</material>
   </gazebo>
 
   <gazebo reference="left_wheel">
     <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="body">
+    <material>Gazebo/Blue</material>
   </gazebo>
 
   <gazebo reference="right_wheel">
