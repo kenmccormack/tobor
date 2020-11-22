@@ -3,11 +3,7 @@
     <env name="TURTLEBOT3_MODEL" value="waffle"/>
     <rosparam file="$(find tobor_locomotion)/conf/motors.yaml" />
 
-    <node
-        name= "teleop_convert"
-        pkg = "tobor_locomotion"
-        type= "teleop_node">
-    </node>
+    <include file="$(find tobor_locomotion)/launch/teleop.launch"/>
 
     <include file="$(find tobor_locomotion)/launch/roboclaw_odom.launch" />
 
