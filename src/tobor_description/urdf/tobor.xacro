@@ -199,27 +199,7 @@
   </joint>
 
 
-<!--
-  <link name="baselink">
-    <collision>
-      <origin xyz="0 0 0" rpy=" 0 0 0"/>
-      <geometry>
-        <box size=".2 .38 .2"/>
-      </geometry>
-    </collision>
-    <visual>
-      <origin xyz="0 0 -0.0" rpy=" 0 0 0"/>
-      <geometry>
-        <box size=".2 .38 .2"/>
-      </geometry>
-      <material name="black"/>
-    </visual>
-  </link>
-  -->
-  
 
-
-<!--
   <link name="camera">
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -246,15 +226,15 @@
 
   <joint name="camera_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz=".2 0 0" rpy="0 0 0"/>
+    <origin xyz=".2 0 .2" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="camera"/>
   </joint>
--->
-<!--
+
+
   <joint name="hokuyo_joint" type="fixed">
     <axis xyz="0 1 0" />
-    <origin xyz=".15 0 .1" rpy="0 0 0"/>
+    <origin xyz=".2 0 .3" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="hokuyo"/>
   </joint>
@@ -282,7 +262,7 @@
     </inertial>
   </link>
 
-  -->
+  
 
 
 </robot>
