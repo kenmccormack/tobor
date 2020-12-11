@@ -7,7 +7,7 @@ teleop:
      angular: 4.0
   mixing_gain:  0.6 
 roboclaw:
-  device: "/dev/ttyUSB0"
+  device: "/dev/sensor_motors"
   baud: 115200
   ticks_per_meter: 4488
   base_width: 0.71
