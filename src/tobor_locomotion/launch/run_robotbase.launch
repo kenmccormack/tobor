@@ -4,6 +4,13 @@
     <rosparam file="$(find tobor_locomotion)/conf/motors.yaml" />
     <include file="$(find tobor_locomotion)/launch/roboclaw_odom.launch" />
 
+    <node 
+      name = "map_odom"
+      pkg = "topic_tools"
+      type = "relay"
+      args = "odom_wheeled odom">
+    </node>
+
     <node
         name = "gpsd_client"
         pkg = "gpsd_client"
@@ -12,11 +19,6 @@
 
     <include 
       file="$(find tobor_navigation)/launch/start_navigation.launch"  >
-    </include>
-
-    <include
-      file="$(find realsense2_camera)/launch/rs_t265.launch" >
-         <remap from="/camera/odom/sample" to="odom" />
     </include>
 
     <include
