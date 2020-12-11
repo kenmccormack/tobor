@@ -1,0 +1,23 @@
+<launch>
+    <include
+        file="$(find tobor_gazebo)/launch/tobor_world.launch">
+        <arg name="world" value="tobor"/>
+    </include>
+
+    <include
+     file="$(find tobor_locomotion)/launch/joystick.launch">
+    </include>
+
+    <include 
+        file="$(find tobor_navigation)/launch/tobor_navigation.launch">
+            <arg name="map_name" value="clear" />
+            <arg name="use_pf" value="false" />
+            <arg name="use_map" value="true" />
+            <arg name="open_rviz" value="true" />
+    </include>
+
+    <include file="$(find tobor_locomotion)/launch/teleop.launch">
+        <arg name="start_joy" value="true"/>
+    </include>
+
+</launch>

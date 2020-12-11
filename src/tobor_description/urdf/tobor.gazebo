@@ -25,27 +25,31 @@
       <updateRate>10</updateRate>
       <leftJoint>left_wheel_hinge</leftJoint>
       <rightJoint>right_wheel_hinge</rightJoint>
-      <wheelSeparation>0.63</wheelSeparation>
+      <wheelSeparation>0.54</wheelSeparation>
       <wheelDiameter>0.348</wheelDiameter>
-      <torque>10</torque>
+      <wheelTorque>170</wheelTorque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>chassis</robotBaseFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
     </plugin>
   </gazebo>
 
 
-  <gazebo reference="chassis">
-    <material>Gazebo/Orange</material>
+  <gazebo reference="base_link">
+    <material>Gazebo/Black</material>
   </gazebo>
 
   <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo reference="body">
     <material>Gazebo/Blue</material>
   </gazebo>
 
   <gazebo reference="right_wheel">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Black</material>
   </gazebo>
 
 
@@ -82,7 +86,6 @@
     </sensor>
   </gazebo>
 
-  <!-- hokuyo -->
   <gazebo reference="hokuyo">
     <sensor type="ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -104,10 +107,6 @@
         </range>
         <noise>
           <type>gaussian</type>
-          <!-- Noise parameters based on published spec for Hokuyo laser
-               achieving "+-30mm" accuracy at range < 10m.  A mean of 0.0m and
-               stddev of 0.01m will put 99.7% of samples within 0.03m of the true
-               reading. -->
           <mean>0.0</mean>
           <stddev>0.01</stddev>
         </noise>
@@ -118,5 +117,6 @@
       </plugin>
     </sensor>
   </gazebo>
+  
 
 </robot>

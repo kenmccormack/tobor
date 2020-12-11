@@ -1,0 +1,16 @@
+<launch>
+    <arg name="world" default="tobor"/>
+    <include
+        file="$(find tobor_gazebo)/launch/tobor_world.launch">
+        <arg name="world" value="$(arg world)"/>
+    </include>
+
+    <include 
+        file="$(find tobor_navigation)/launch/tobor_slam.launch">
+    </include>
+
+    <include file="$(find tobor_locomotion)/launch/teleop.launch">
+        <arg name="start_joy" value="true"/>
+    </include>
+
+</launch>

@@ -3,28 +3,15 @@
     <env name="TURTLEBOT3_MODEL" value="waffle"/>
     <rosparam file="$(find tobor_locomotion)/conf/motors.yaml" />
 
-    <node
-        name= "teleop_convert"
-        pkg = "tobor_locomotion"
-        type= "teleop_node">
-    </node>
-   <!--
-    <node 
-        name= "roboclaw_ifc"
-        pkg = "tobor_locomotion"
-        type = "roboclaw_ifc.py"
-        output = "screen" >
-    </node>
-   -->
+    <include file="$(find tobor_locomotion)/launch/teleop.launch"/>
+
     <include file="$(find tobor_locomotion)/launch/roboclaw_odom.launch" />
 
     <node
-	name = "gpsd_client"
-	pkg = "gpsd_client"
-	type = "gpsd_client">
+        name = "gpsd_client"
+        pkg = "gpsd_client"
+        type = "gpsd_client">
     </node>
-    <node pkg="tf" type="static_transform_publisher" name="base2chassis" args="0 0 0 0 0 0 base_link chassis 100" />
-
 
     <include 
       file="$(find tobor_navigation)/launch/start_navigation.launch"  >
@@ -35,5 +22,8 @@
          <remap from="/camera/odom/sample" to="odom" />
     </include>
 
+    <include
+      file="$(find tobor_locomotion)/launch/sensors.launch"> 
+    </include>
 
 </launch>
