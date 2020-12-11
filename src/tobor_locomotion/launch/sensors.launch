@@ -1,6 +1,7 @@
 <launch>
-    <include 
-        file="$(find realsense2_camera)/launch/rs_t265.launch">
-        <arg name="camera" value="vslam"/>
+    <include
+        file="$(find realsense2_camera)/launch/rs_t265.launch" >
+           <arg name="camera" value="vslam"/>
+           <remap from="/camera/odom/sample" to="vslam_odom" />
     </include>
 </launch>
