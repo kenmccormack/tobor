@@ -1,0 +1,11 @@
+ <launch>
+    <rosparam file="$(find tobor_locomotion)/conf/motors.yaml" />
+
+    <include file="$(find tobor_locomotion)/launch/teleop.launch"/>
+
+    <include file="$(find tobor_locomotion)/launch/roboclaw_odom.launch" />
+
+    <include 
+      file="$(find tobor_navigation)/launch/start_navigation.launch"  >
+    </include>
+</launch>
