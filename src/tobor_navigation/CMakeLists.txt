@@ -108,7 +108,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(SYSTEM ${catkin_INCLUDE_DIRS} )
+include_directories(SYSTEM ${catkin_INCLUDE_DIRS} include )
 
 ## Declare a C++ library
 # add_library(tobor_navigation
@@ -121,7 +121,7 @@ include_directories(SYSTEM ${catkin_INCLUDE_DIRS} )
 # add_dependencies(tobor_navigation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-add_executable(imu_reader src/imu_reader.cpp)
+add_executable(imu_reader src/imu_reader.cpp src/MadgwickAHRS.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

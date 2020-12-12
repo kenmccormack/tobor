@@ -11,24 +11,53 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/Imu.h"
+#include<iostream>
+#include<vector>
+#include<sstream>
+
+#include "MadgwickAHRS.h"
 
 
 class MPU9250Reader
 {
 public: 
-    MPU9250Reader(std::string port_name){
+    MPU9250Reader(std::string port_name, float sampleFrequency){
         open_port(port_name);
+        madg_.begin(sampleFrequency); 
     }
     ~MPU9250Reader(){}
     void scan()
     {
         read_port(read_buffer_);
-        std::cout << "Response: " << read_buffer_ << std::endl;
+        std::stringstream sample_str(read_buffer_);
+        std::vector<float> data;
+        std::vector<std::string> parsed;
+        while ( sample_str.good()) {
+            std::string substr;
+            getline(sample_str, substr, ',');
+            data.push_back(stof(substr));
+        }
+        /*for( int ii =0 ; ii < data.size(); ii++){
+            std::cout << data.at(ii) << " ";
+        }
+        std::cout << std::endl;
+        */
+
+        /*convert data */ 
+        madg_.update(data.at(3), data.at(4), data.at(5),
+                    data.at(0), data.at(1), data.at(2),
+                    data.at(6), data.at(7), data.at(8));
+
+        std::cout << madg_.getRoll() << " " <<  madg_.getPitch() << " " << madg_.getYaw() << std::endl;
+
+       
     }
 
 private:
     int serial_port_;
     char read_buffer_[1000];
+    Madgwick madg_;
+
 
     int read_port(char * response)
     {
@@ -104,9 +133,13 @@ int main(int argc, char**argv)
     ros::NodeHandle nh;
 
     std::string port;
+    float sampleFrequency; 
     nh.getParam("/forward_imu/port", port);
+    nh.getParam("/forward_imu/sample_frequency", sampleFrequency);
+    
+
     std::cout << "Port " << port;
-    auto reader = MPU9250Reader(port);
+    auto reader = MPU9250Reader(port, sampleFrequency);
 
     while (ros::ok())
     {
