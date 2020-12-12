@@ -258,3 +258,11 @@ void Madgwick::computeAngles()
     anglesComputed = 1;
 }
 
+void Madgwick::getQuaternion(float& w, float& x, float& y, float& z)
+{
+    w = q0;
+    x = q1;
+    y = q2;
+    z = q3;
+}
+

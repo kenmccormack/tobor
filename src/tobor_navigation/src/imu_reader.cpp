@@ -11,6 +11,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "sensor_msgs/Imu.h"
+#include "std_msgs/Header.h"
 #include<iostream>
 #include<vector>
 #include<sstream>
@@ -21,9 +22,12 @@
 class MPU9250Reader
 {
 public: 
-    MPU9250Reader(std::string port_name, float sampleFrequency){
+    MPU9250Reader(std::string port_name, float sampleFrequency, ros::NodeHandle nh): nh_(nh)
+    {
         open_port(port_name);
         madg_.begin(sampleFrequency); 
+        imu_pub_ = nh.advertise<sensor_msgs::Imu>("imu/data",100);
+        
     }
     ~MPU9250Reader(){}
     void scan()
@@ -43,20 +47,45 @@ public:
         std::cout << std::endl;
         */
 
-        /*convert data */ 
+        /*convert data. accell(xyz), gyro(xyz), mag(xyz)*/ 
         madg_.update(data.at(3), data.at(4), data.at(5),
                     data.at(0), data.at(1), data.at(2),
                     data.at(6), data.at(7), data.at(8));
 
-        std::cout << madg_.getRoll() << " " <<  madg_.getPitch() << " " << madg_.getYaw() << std::endl;
+        std::cout << madg_.getRoll() << " " <<  madg_.getPitch() << " " << madg_.getYaw() << "    " << data.at(6) << " " << data.at(7) << std::endl;
+    
 
-       
+        float w,x,y,z;
+        madg_.getQuaternion(w,x,y,z);
+        sensor_msgs::Imu imu_msg;
+        std_msgs::Header header; 
+        header.stamp = ros::Time::now();
+        header.frame_id = std::string("imu");
+        imu_msg.orientation.x = x;
+        imu_msg.orientation.y = y;
+        imu_msg.orientation.z = z;
+        imu_msg.orientation.w = w;
+        imu_msg.angular_velocity.x = data.at(3);
+        imu_msg.angular_velocity.y = data.at(4);
+        imu_msg.angular_velocity.z = data.at(5);
+        imu_msg.linear_acceleration.x = data.at(0);
+        imu_msg.linear_acceleration.y = data.at(1);
+        imu_msg.linear_acceleration.z = data.at(2);
+
+        /*out the door*/
+        imu_pub_.publish(imu_msg);
+
+        
+    
+
     }
 
 private:
     int serial_port_;
     char read_buffer_[1000];
     Madgwick madg_;
+    ros::NodeHandle nh_;
+    ros::Publisher imu_pub_;
 
 
     int read_port(char * response)
@@ -139,11 +168,11 @@ int main(int argc, char**argv)
     
 
     std::cout << "Port " << port;
-    auto reader = MPU9250Reader(port, sampleFrequency);
+    auto reader = MPU9250Reader(port, sampleFrequency, nh);
 
+    ros::spinOnce();
     while (ros::ok())
-    {
-       ros::spinOnce();
+    {  
        reader.scan();
     }
 
