@@ -4,10 +4,10 @@ project(tobor_navigation)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS roscpp )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+#find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -108,7 +108,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(SYSTEM ${catkin_INCLUDE_DIRS} )
 
 ## Declare a C++ library
 # add_library(tobor_navigation
@@ -121,16 +121,17 @@ catkin_package(
 # add_dependencies(tobor_navigation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(tobor_navigation_node src/tobor_navigation_node.cpp)
+add_executable(imu_reader src/imu_reader.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(tobor_navigation_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(tobor_navigation_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(imu_reader
+   ${catkin_LIBRARIES}
+
+)
 
 #############
 ## Install ##
