@@ -63,6 +63,7 @@ public:
            
             if (data.size() >= 9)
             {
+                received_data_ = true; 
                 /*convert data. accell(xyz), gyro(xyz), mag(xyz)*/ 
                 madg_.update(data.at(3), data.at(4), data.at(5),
                             data.at(0), data.at(1), data.at(2),
@@ -117,15 +118,18 @@ private:
     ros::Timer diag_timer; 
     double rtk_radio_;
     double imu_temp_;
+    bool received_data_; 
     
     void diagCallback(const ros::TimerEvent &)
     {
+        ROS_INFO("TIMER");
         diagnostic_msgs::DiagnosticArray diag_array_msg;
         diagnostic_msgs::DiagnosticStatus status;
         std_msgs::Header h1; 
         h1.stamp = ros::Time::now();
         diag_array_msg.header = h1;
 
+        /* RTK status */ 
         status.name=std::string("rtk");
         if (rtk_radio_ == 0.0)
         {
@@ -137,6 +141,7 @@ private:
         }
         diag_array_msg.status.push_back(status);
 
+        /* Temp status */ 
         status.name = "Imu temp";
         status.message = std::string("Imu Temperature (C)");
         status.level = diagnostic_msgs::DiagnosticStatus::OK;
@@ -146,7 +151,23 @@ private:
         status.values.push_back(temp);
         diag_array_msg.status.push_back(status);
 
+        /*data status*/
+        diagnostic_msgs::DiagnosticStatus rx_status; 
+        rx_status.name = "IMU data";
+        if (received_data_ == false)
+        {
+            rx_status.message = "No data recieved";
+            rx_status.level = diagnostic_msgs::DiagnosticStatus::WARN; 
+        } else {
+            rx_status.message = "Data recieved";
+            rx_status.level = diagnostic_msgs::DiagnosticStatus::OK; 
+        }
+        diag_array_msg.status.push_back(rx_status);
+
+
         diag_pub_.publish(diag_array_msg);
+
+        received_data_ = false; 
     }
 
     bool setup_diag() {
@@ -167,14 +188,15 @@ private:
             n = read( serial_port_, &buf, 1 );
             sprintf( &response[spot], "%c", buf );
             spot += n;
+            ros::spinOnce();
         } while( buf != '\r' && n > 0);
 
         if (n < 0) {
-            std::cout << "Error reading: " << strerror(errno) << std::endl;
+            ROS_WARN("Error Reading");
             return 1;
         }
         else if (n == 0) {
-            std::cout << "Read nothing!" << std::endl;
+            ROS_WARN("Read nothing");
             return 1; 
         }
         else {
