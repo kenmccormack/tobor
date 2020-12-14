@@ -12,6 +12,7 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Header.h"
+#include "diagnostic_msgs/DiagnosticArray.h"
 #include<iostream>
 #include<vector>
 #include<sstream>
@@ -24,6 +25,8 @@ class MPU9250Reader
 public: 
     MPU9250Reader(std::string port_name, float sampleFrequency, std::string sensor_name, ros::NodeHandle nh): nh_(nh), serial_port_(-1)
     {
+        diag_pub_ = nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics",100);
+       
         if (open_port(port_name))
         {
             madg_.begin(sampleFrequency); 
@@ -87,7 +90,43 @@ public:
 
                 if (data.size()==11)
                 {
-                    std::cout << "wireless: " << data.at(10) << " temp: " << data.at(9) << std::endl;
+                    double now = ros::Time::now().toSec();
+                    if (now  - last_diagnostics_  > 1.0)
+                    {
+                        last_diagnostics_ = now; 
+
+                        diagnostic_msgs::DiagnosticArray diag_array_msg;
+                        diagnostic_msgs::DiagnosticStatus status;
+                        std_msgs::Header h1; 
+                        h1.stamp = ros::Time::now();
+                        diag_array_msg.header = h1;
+
+                        status.name=std::string("rtk");
+                        if (data.at(10) == 0.0)
+                        {
+                            status.message = std::string("No receiption");
+                            status.level = diagnostic_msgs::DiagnosticStatus::WARN; 
+                        } else {
+                            status.message = std::string("Data received");
+                            status.level = diagnostic_msgs::DiagnosticStatus::OK;
+                        }
+                        diag_array_msg.status.push_back(status);
+
+                        status.name = "Imu temp";
+                        status.message = std::string("Imu Temperature (C)");
+                        status.level = diagnostic_msgs::DiagnosticStatus::OK;
+                        diagnostic_msgs::KeyValue temp;
+                        temp.key="Temperature";
+                        temp.value =  std::to_string(data.at(9));
+                        status.values.push_back(temp);
+                        diag_array_msg.status.push_back(status);
+
+
+                        diag_pub_.publish(diag_array_msg);
+                        std::cout << "wireless: " << data.at(10) << " temp: " << data.at(9) << std::endl;
+
+
+                    }
                 }
             }
             else
@@ -105,6 +144,9 @@ private:
     Madgwick madg_;
     ros::NodeHandle nh_;
     ros::Publisher imu_pub_;
+    ros::Publisher diag_pub_;
+    double last_diagnostics_; 
+    
 
 
     int read_port(char * response)
