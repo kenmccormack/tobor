@@ -22,11 +22,11 @@
 class MPU9250Reader
 {
 public: 
-    MPU9250Reader(std::string port_name, float sampleFrequency, ros::NodeHandle nh): nh_(nh)
+    MPU9250Reader(std::string port_name, float sampleFrequency, std::string sensor_name, ros::NodeHandle nh): nh_(nh)
     {
         open_port(port_name);
         madg_.begin(sampleFrequency); 
-        imu_pub_ = nh.advertise<sensor_msgs::Imu>("imu/data",100);
+        imu_pub_ = nh.advertise<sensor_msgs::Imu>(sensor_name + std::string("/data"),100);
         
     }
     ~MPU9250Reader(){}
@@ -160,15 +160,19 @@ int main(int argc, char**argv)
 {
     ros::init(argc, argv, "imu_reader");
     ros::NodeHandle nh;
+    ros::NodeHandle pnh("~");
+
+    std::string imu_name;
+    pnh.getParam("sensor_name", imu_name);
 
     std::string port;
     float sampleFrequency; 
-    nh.getParam("/forward_imu/port", port);
-    nh.getParam("/forward_imu/sample_frequency", sampleFrequency);
+    nh.getParam(imu_name + std::string("/port"), port);
+    nh.getParam(imu_name + std::string("/sample_frequency"), sampleFrequency);
     
 
     std::cout << "Port " << port;
-    auto reader = MPU9250Reader(port, sampleFrequency, nh);
+    auto reader = MPU9250Reader(port, sampleFrequency, imu_name, nh);
 
     ros::spinOnce();
     while (ros::ok())
