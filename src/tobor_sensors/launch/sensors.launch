@@ -1,0 +1,16 @@
+<launch>
+    <arg name="imu_sensor_name" default="forward_imu"/>
+    <!-- Read sensor config-->
+    <rosparam 
+        command = "load"
+        file = "$(find tobor_sensors)/conf/sensors.yaml" />
+        
+    <node 
+        name="imu_reader"
+        pkg = "tobor_sensors"
+        type = "imu_reader"
+        args = "_sensor_name:=$(arg imu_sensor_name)"
+        output = "screen">
+    </node>
+
+</launch>

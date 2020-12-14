@@ -1,0 +1,4 @@
+forward_imu:
+  port : "/dev/sensor_imu"
+  sample_frequency : 20.0
+   

@@ -22,62 +22,81 @@
 class MPU9250Reader
 {
 public: 
-    MPU9250Reader(std::string port_name, float sampleFrequency, std::string sensor_name, ros::NodeHandle nh): nh_(nh)
+    MPU9250Reader(std::string port_name, float sampleFrequency, std::string sensor_name, ros::NodeHandle nh): nh_(nh), serial_port_(-1)
     {
-        open_port(port_name);
-        madg_.begin(sampleFrequency); 
-        imu_pub_ = nh.advertise<sensor_msgs::Imu>(sensor_name + std::string("/data"),100);
+        if (open_port(port_name))
+        {
+            madg_.begin(sampleFrequency); 
+            imu_pub_ = nh.advertise<sensor_msgs::Imu>(sensor_name + std::string("/data"),100);
+        }
+        else
+        {
+            ROS_ERROR("Failed to open imu serial port");
+        }
         
     }
     ~MPU9250Reader(){}
-    void scan()
+    bool scan()
     {
-        read_port(read_buffer_);
-        std::stringstream sample_str(read_buffer_);
-        std::vector<float> data;
-        std::vector<std::string> parsed;
-        while ( sample_str.good()) {
-            std::string substr;
-            getline(sample_str, substr, ',');
-            data.push_back(stof(substr));
+        if( serial_port_ == -1)
+        {
+            return false; 
         }
-        /*for( int ii =0 ; ii < data.size(); ii++){
-            std::cout << data.at(ii) << " ";
+        else
+        {
+            read_port(read_buffer_);
+            std::stringstream sample_str(read_buffer_);
+            std::vector<float> data;
+            std::vector<std::string> parsed;
+            //std::cout << std::string(read_buffer_) << std::endl;
+            while ( sample_str.good()) {
+                std::string substr;
+                getline(sample_str, substr, ',');
+                data.push_back(stof(substr));
+            }
+           
+            if (data.size() >= 9)
+            {
+                /*convert data. accell(xyz), gyro(xyz), mag(xyz)*/ 
+                madg_.update(data.at(3), data.at(4), data.at(5),
+                            data.at(0), data.at(1), data.at(2),
+                            data.at(6), data.at(7), data.at(8));
+
+                //std::cout << madg_.getRoll() << " " <<  madg_.getPitch() << " " << madg_.getYaw() << "    " << data.at(6) << " " << data.at(7) << std::endl;
+            
+
+                float w,x,y,z;
+                madg_.getQuaternion(w,x,y,z);
+                sensor_msgs::Imu imu_msg;
+                std_msgs::Header header; 
+                header.stamp = ros::Time::now();
+                header.frame_id = std::string("imu");
+                imu_msg.orientation.x = x;
+                imu_msg.orientation.y = y;
+                imu_msg.orientation.z = z;
+                imu_msg.orientation.w = w;
+                imu_msg.angular_velocity.x = data.at(3);
+                imu_msg.angular_velocity.y = data.at(4);
+                imu_msg.angular_velocity.z = data.at(5);
+                imu_msg.linear_acceleration.x = data.at(0);
+                imu_msg.linear_acceleration.y = data.at(1);
+                imu_msg.linear_acceleration.z = data.at(2);
+
+                /*out the door*/
+                imu_pub_.publish(imu_msg);
+
+                if (data.size()==11)
+                {
+                    std::cout << "wireless: " << data.at(10) << " temp: " << data.at(9) << std::endl;
+                }
+            }
+            else
+            {
+                ROS_WARN("Imu received fewer datapoints");
+                return false;
+            }
         }
-        std::cout << std::endl;
-        */
-
-        /*convert data. accell(xyz), gyro(xyz), mag(xyz)*/ 
-        madg_.update(data.at(3), data.at(4), data.at(5),
-                    data.at(0), data.at(1), data.at(2),
-                    data.at(6), data.at(7), data.at(8));
-
-        std::cout << madg_.getRoll() << " " <<  madg_.getPitch() << " " << madg_.getYaw() << "    " << data.at(6) << " " << data.at(7) << std::endl;
-    
-
-        float w,x,y,z;
-        madg_.getQuaternion(w,x,y,z);
-        sensor_msgs::Imu imu_msg;
-        std_msgs::Header header; 
-        header.stamp = ros::Time::now();
-        header.frame_id = std::string("imu");
-        imu_msg.orientation.x = x;
-        imu_msg.orientation.y = y;
-        imu_msg.orientation.z = z;
-        imu_msg.orientation.w = w;
-        imu_msg.angular_velocity.x = data.at(3);
-        imu_msg.angular_velocity.y = data.at(4);
-        imu_msg.angular_velocity.z = data.at(5);
-        imu_msg.linear_acceleration.x = data.at(0);
-        imu_msg.linear_acceleration.y = data.at(1);
-        imu_msg.linear_acceleration.z = data.at(2);
-
-        /*out the door*/
-        imu_pub_.publish(imu_msg);
-
-        
-    
-
+        return true; 
     }
 
 private:
@@ -117,7 +136,7 @@ private:
     }
     
 
-    void open_port(std::string port_name)
+    bool open_port(std::string port_name)
     {
         /*https://stackoverflow.com/questions/18108932/reading-and-writing-to-serial-port-in-c-on-linux*/
         struct termios tty;
@@ -127,7 +146,8 @@ private:
 
         /* Error Handling */
         if ( tcgetattr ( serial_port_, &tty ) != 0 ) {
-        std::cout << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
+            std::cout << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
+            return false; 
         }
 
         /* Set Baud Rate */
@@ -151,8 +171,10 @@ private:
         /* Flush Port, then applies attributes */
         tcflush( serial_port_, TCIFLUSH );
         if ( tcsetattr ( serial_port_, TCSANOW, &tty ) != 0) {
-        std::cout << "Error " << errno << " from tcsetattr" << std::endl;
+           std::cout << "Error " << errno << " from tcsetattr" << std::endl;
+           return false;
         }
+        return true;
     }       
 };
 
@@ -170,8 +192,8 @@ int main(int argc, char**argv)
     nh.getParam(imu_name + std::string("/port"), port);
     nh.getParam(imu_name + std::string("/sample_frequency"), sampleFrequency);
     
-
-    std::cout << "Port " << port;
+   
+    ROS_INFO("imu port %s ", port.c_str());
     auto reader = MPU9250Reader(port, sampleFrequency, imu_name, nh);
 
     ros::spinOnce();

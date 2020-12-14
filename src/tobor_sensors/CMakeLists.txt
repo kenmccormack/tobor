@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(tobot_sensors)
+project(tobor_sensors)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -97,7 +97,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp )
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES tobot_sensors
+#  LIBRARIES tobor_sensors
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -111,21 +111,21 @@ catkin_package(
 include_directories(SYSTEM ${catkin_INCLUDE_DIRS} include )
 
 ## Declare a C++ library
-# add_library(tobot_sensors
-#   src/${PROJECT_NAME}/tobot_sensors.cpp
+# add_library(tobor_sensors
+#   src/${PROJECT_NAME}/tobor_sensors.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(tobot_sensors ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(tobor_sensors ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 add_executable(imu_reader src/imu_reader.cpp src/MadgwickAHRS.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(tobot_sensors_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(tobor_sensors_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(imu_reader
@@ -148,7 +148,7 @@ target_link_libraries(imu_reader
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS tobot_sensors tobot_sensors_node
+# install(TARGETS tobor_sensors tobor_sensors_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -177,7 +177,7 @@ install(DIRECTORY config/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_tobot_sensors.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_tobor_sensors.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
