@@ -25,8 +25,9 @@ class MPU9250Reader
 public: 
     MPU9250Reader(std::string port_name, float sampleFrequency, std::string sensor_name, ros::NodeHandle nh): nh_(nh), serial_port_(-1)
     {
-        diag_pub_ = nh.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics",100);
-       
+        // Setup diagnostics
+        setup_diag();
+
         if (open_port(port_name))
         {
             madg_.begin(sampleFrequency); 
@@ -39,6 +40,8 @@ public:
         
     }
     ~MPU9250Reader(){}
+
+   
     bool scan()
     {
         if( serial_port_ == -1)
@@ -90,43 +93,8 @@ public:
 
                 if (data.size()==11)
                 {
-                    double now = ros::Time::now().toSec();
-                    if (now  - last_diagnostics_  > 1.0)
-                    {
-                        last_diagnostics_ = now; 
-
-                        diagnostic_msgs::DiagnosticArray diag_array_msg;
-                        diagnostic_msgs::DiagnosticStatus status;
-                        std_msgs::Header h1; 
-                        h1.stamp = ros::Time::now();
-                        diag_array_msg.header = h1;
-
-                        status.name=std::string("rtk");
-                        if (data.at(10) == 0.0)
-                        {
-                            status.message = std::string("No receiption");
-                            status.level = diagnostic_msgs::DiagnosticStatus::WARN; 
-                        } else {
-                            status.message = std::string("Data received");
-                            status.level = diagnostic_msgs::DiagnosticStatus::OK;
-                        }
-                        diag_array_msg.status.push_back(status);
-
-                        status.name = "Imu temp";
-                        status.message = std::string("Imu Temperature (C)");
-                        status.level = diagnostic_msgs::DiagnosticStatus::OK;
-                        diagnostic_msgs::KeyValue temp;
-                        temp.key="Temperature";
-                        temp.value =  std::to_string(data.at(9));
-                        status.values.push_back(temp);
-                        diag_array_msg.status.push_back(status);
-
-
-                        diag_pub_.publish(diag_array_msg);
-                        std::cout << "wireless: " << data.at(10) << " temp: " << data.at(9) << std::endl;
-
-
-                    }
+                    rtk_radio_ = data.at(10);
+                    imu_temp_ = data.at(9);
                 }
             }
             else
@@ -146,8 +114,45 @@ private:
     ros::Publisher imu_pub_;
     ros::Publisher diag_pub_;
     double last_diagnostics_; 
+    ros::Timer diag_timer; 
+    double rtk_radio_;
+    double imu_temp_;
     
+    void diagCallback(const ros::TimerEvent &)
+    {
+        diagnostic_msgs::DiagnosticArray diag_array_msg;
+        diagnostic_msgs::DiagnosticStatus status;
+        std_msgs::Header h1; 
+        h1.stamp = ros::Time::now();
+        diag_array_msg.header = h1;
 
+        status.name=std::string("rtk");
+        if (rtk_radio_ == 0.0)
+        {
+            status.message = std::string("No receiption");
+            status.level = diagnostic_msgs::DiagnosticStatus::WARN; 
+        } else {
+            status.message = std::string("Data received");
+            status.level = diagnostic_msgs::DiagnosticStatus::OK;
+        }
+        diag_array_msg.status.push_back(status);
+
+        status.name = "Imu temp";
+        status.message = std::string("Imu Temperature (C)");
+        status.level = diagnostic_msgs::DiagnosticStatus::OK;
+        diagnostic_msgs::KeyValue temp;
+        temp.key="Temperature";
+        temp.value =  std::to_string(imu_temp_);
+        status.values.push_back(temp);
+        diag_array_msg.status.push_back(status);
+
+        diag_pub_.publish(diag_array_msg);
+    }
+
+    bool setup_diag() {
+        diag_pub_ = nh_.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics",100);
+        diag_timer = nh_.createTimer(ros::Duration(1.0), &MPU9250Reader::diagCallback, this);
+    }
 
     int read_port(char * response)
     {
@@ -238,10 +243,10 @@ int main(int argc, char**argv)
     ROS_INFO("imu port %s ", port.c_str());
     auto reader = MPU9250Reader(port, sampleFrequency, imu_name, nh);
 
-    ros::spinOnce();
     while (ros::ok())
     {  
        reader.scan();
+       ros::spinOnce();
     }
 
 
